@@ -113,14 +113,14 @@ export default function Projects() {
       <div className={`flex-1 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
         {/* Top Header */}
         <header className="h-16 bg-gray-900/95 border-b border-gray-800 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 sticky top-0 z-40 flex items-center justify-between px-6">
-          <h1 className="text-xl font-semibold text-green-400">ForeChain</h1>
+          <h1 className="text-xl font-semibold text-green-400">Forechain</h1>
           <div className="flex items-center space-x-4">
             <ConnectButton
               client={client}
               chain={chain}
               appMetadata={{
-                name: "ForeChain",
-                url: "https://ForeChain.com",
+                name: "Forechain",
+                url: "https://Forechain.com",
               }}
             />
           </div>

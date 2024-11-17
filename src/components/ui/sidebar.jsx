@@ -45,7 +45,7 @@ const SidebarNav = ({ isSidebarCollapsed, setIsSidebarCollapsed }) => {
           <Shield className="w-8 h-8 text-green-500" />
           {!isSidebarCollapsed && (
             <span className="ml-2 font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
-              ForeChain
+              Forechain
             </span>
           )}
         </Link>

@@ -234,7 +234,7 @@ export default function LandingPage() {
                 <div className="absolute -inset-1 bg-green-400/20 blur-lg rounded-full"></div>
               </div>
               <span className="ml-3 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
-                ForeChain
+                Forechain
               </span>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
@@ -245,8 +245,8 @@ export default function LandingPage() {
             <ConnectButton
               client={client}
               appMetadata={{
-                name: "ForeChain",
-                url: "https://ForeChain.com",
+                name: "Forechain",
+                url: "https://Forechain.com",
               }}
             />
           </div>
@@ -376,7 +376,7 @@ export default function LandingPage() {
               Ready for Enterprise-Grade Security?
             </h2>
             <p className="text-xl text-gray-400 mb-12 leading-relaxed">
-              Join industry leaders who trust ForeChain for their mission-critical transactions
+              Join industry leaders who trust Forechain for their mission-critical transactions
             </p>
             <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-black px-8 py-6 text-lg shadow-lg shadow-green-500/20">
               Schedule Consultation
@@ -395,7 +395,7 @@ export default function LandingPage() {
               <div className="flex items-center mb-6">
                 <Shield className="w-8 h-8 text-green-400" />
                 <span className="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
-                  ForeChain
+                  Forechain
                 </span>
               </div>
               <p className="text-gray-400 leading-relaxed">
@@ -433,7 +433,7 @@ export default function LandingPage() {
           <div className="mt-16 pt-8 border-t border-gray-800">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="text-gray-400 text-sm">
-                <p>&copy; 2024 ForeChain. All rights reserved.</p>
+                <p>&copy; 2024 Forechain. All rights reserved.</p>
               </div>
               <div className="flex justify-start md:justify-end space-x-6">
                 <a href="#" className="text-gray-400 hover:text-green-400 transition-colors">

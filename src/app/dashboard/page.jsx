@@ -102,8 +102,8 @@ export default function Dashboard() {
               client={client}
               chain={chain}
               appMetadata={{
-                name: "ForeChain",
-                url: "https://ForeChain.com",
+                name: "Forechain",
+                url: "https://Forechain.com",
               }}
             />
           </div>
