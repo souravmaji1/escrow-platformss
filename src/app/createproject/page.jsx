@@ -104,7 +104,7 @@ const CreateProject = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-gray-400 block mb-2">Buyer's Wallet Address</label>
+                    <label className="text-sm text-gray-400 block mb-2">Buyers Wallet Address</label>
                     <Input
                       placeholder="0x..."
                       value={buyerAddress}
@@ -117,7 +117,7 @@ const CreateProject = () => {
                   <Separator className="bg-gray-700" />
 
                   <div>
-                    <label className="text-sm text-gray-400 block mb-2">Seller's Wallet Address</label>
+                    <label className="text-sm text-gray-400 block mb-2">Sellers Wallet Address</label>
                     <Input
                       placeholder="0x..."
                       value={sellerAddress}
@@ -170,7 +170,7 @@ const CreateProject = () => {
                     <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
                       <span className="text-green-400 text-sm">1</span>
                     </div>
-                    <p className="text-gray-400">Create a project by entering both parties' wallet addresses</p>
+                    <p className="text-gray-400">Create a project by entering both parties wallet addresses</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
