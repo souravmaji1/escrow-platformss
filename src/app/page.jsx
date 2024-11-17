@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import React from 'react';
 import { ConnectButton } from "thirdweb/react";
 import { client } from "./client";
@@ -10,11 +12,13 @@ import {
   Shield,
   ArrowRight,
   Wallet,
+  X,
   RefreshCw,
   ChevronRight,
   CheckCircle2,
   Lock,
   Users,
+  Menu,
   Zap,
   Activity,
   Database,
@@ -62,7 +66,31 @@ const NetworkAnimation = () => (
   </div>
 );
 
-// Live Metrics Section
+const MobileMenu = ({ isOpen, onClose }) => (
+  <div className={`fixed inset-0 z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className="absolute inset-0 bg-gray-900/95 backdrop-blur-lg">
+      <div className="flex justify-end p-4">
+        <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+      <nav className="flex flex-col items-center space-y-8 p-8">
+        <a href="#features" onClick={onClose} className="text-xl text-gray-300 hover:text-green-400 transition-colors">Features</a>
+        <a href="#how-it-works" onClick={onClose} className="text-xl text-gray-300 hover:text-green-400 transition-colors">Solutions</a>
+        <a href="#pricing" onClick={onClose} className="text-xl text-gray-300 hover:text-green-400 transition-colors">Enterprise</a>
+        <ConnectButton
+          client={client}
+          appMetadata={{
+            name: "Forechain",
+            url: "https://Forechain.com",
+          }}
+        />
+      </nav>
+    </div>
+  </div>
+);
+
+// Update LiveMetricsSection with better mobile layout
 const LiveMetricsSection = () => {
   const [currentMetric, setCurrentMetric] = useState(0);
   const metrics = [
@@ -79,19 +107,19 @@ const LiveMetricsSection = () => {
   }, []);
 
   return (
-    <section className="relative py-24 bg-gray-800/30">
+    <section className="relative py-16 md:py-24 bg-gray-800/30">
       <NetworkAnimation />
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center">
           <div className="mb-8">
-            <Activity className="w-12 h-12 text-green-400 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-100">Live Network Metrics</h2>
+            <Activity className="w-10 h-10 md:w-12 md:h-12 text-green-400 mx-auto mb-4" />
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-100">Live Network Metrics</h2>
           </div>
-          <div className="relative h-32 flex items-center justify-center">
+          <div className="relative h-24 md:h-32 flex items-center justify-center">
             <div className="absolute inset-0 bg-green-400/5 blur-3xl rounded-full"></div>
             <div className="relative">
-              <p className="text-5xl font-bold text-green-400 mb-2">{metrics[currentMetric].value}</p>
-              <p className="text-gray-400">{metrics[currentMetric].label}</p>
+              <p className="text-4xl md:text-5xl font-bold text-green-400 mb-2">{metrics[currentMetric].value}</p>
+              <p className="text-sm md:text-base text-gray-400">{metrics[currentMetric].label}</p>
             </div>
           </div>
         </div>
@@ -100,53 +128,53 @@ const LiveMetricsSection = () => {
   );
 };
 
-// Technology Stack Section
+// Update TechnologyStackSection with responsive grid
 const TechnologyStackSection = () => {
   const technologies = [
     {
-      icon: <Network className="w-8 h-8" />,
+      icon: <Network className="w-6 h-6 md:w-8 md:h-8" />,
       name: "Multi-Chain Protocol",
       description: "Cross-chain compatibility across major networks"
     },
     {
-      icon: <Database className="w-8 h-8" />,
+      icon: <Database className="w-6 h-6 md:w-8 md:h-8" />,
       name: "Distributed Storage",
       description: "Redundant data storage with instant recovery"
     },
     {
-      icon: <Lock className="w-8 h-8" />,
+      icon: <Lock className="w-6 h-6 md:w-8 md:h-8" />,
       name: "Zero-Knowledge Proofs",
       description: "Privacy-preserving transaction validation"
     },
     {
-      icon: <Cpu className="w-8 h-8" />,
+      icon: <Cpu className="w-6 h-6 md:w-8 md:h-8" />,
       name: "AI-Powered Security",
       description: "Real-time threat detection and prevention"
     }
   ];
 
   return (
-    <section className="relative py-32 px-4">
+    <section className="relative py-20 md:py-32 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
             Powered by Advanced Technology
           </h2>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-sm md:text-base text-gray-400">
             Built on cutting-edge blockchain and cryptographic foundations
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
           {technologies.map((tech, index) => (
             <div key={index} className="relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-              <div className="relative p-6 bg-gray-800 rounded-lg">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 bg-green-400/10 rounded-lg text-green-400">
+              <div className="relative p-4 md:p-6 bg-gray-800 rounded-lg">
+                <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+                  <div className="p-2 md:p-3 bg-green-400/10 rounded-lg text-green-400">
                     {tech.icon}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-100">{tech.name}</h3>
-                  <p className="text-sm text-gray-400">{tech.description}</p>
+                  <h3 className="text-base md:text-lg font-semibold text-gray-100">{tech.name}</h3>
+                  <p className="text-xs md:text-sm text-gray-400">{tech.description}</p>
                 </div>
               </div>
             </div>
@@ -156,6 +184,8 @@ const TechnologyStackSection = () => {
     </section>
   );
 };
+
+
 
 // Global Coverage Section
 const GlobalCoverageSection = () => {
@@ -222,18 +252,20 @@ export default function LandingPage() {
     { value: "99.99%", label: "Success Rate" }
   ];
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-900 overflow-hidden">
       {/* Header */}
       <header className="border-b border-gray-800 backdrop-blur-lg bg-gray-900/95 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center">
               <div className="relative">
-                <Shield className="w-10 h-10 text-green-400" />
+                <Shield className="w-8 h-8 md:w-10 md:h-10 text-green-400" />
                 <div className="absolute -inset-1 bg-green-400/20 blur-lg rounded-full"></div>
               </div>
-              <span className="ml-3 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
+              <span className="ml-3 text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
                 Forechain
               </span>
             </div>
@@ -241,41 +273,49 @@ export default function LandingPage() {
               <a href="#features" className="text-gray-300 hover:text-green-400 transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-green-400 transition-colors">Solutions</a>
               <a href="#pricing" className="text-gray-300 hover:text-green-400 transition-colors">Enterprise</a>
+              <ConnectButton
+                client={client}
+                appMetadata={{
+                  name: "Forechain",
+                  url: "https://Forechain.com",
+                }}
+              />
             </nav>
-            <ConnectButton
-              client={client}
-              appMetadata={{
-                name: "Forechain",
-                url: "https://Forechain.com",
-              }}
-            />
+            <button
+              className="md:hidden text-gray-400 hover:text-white"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </header>
 
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+
       {/* Hero Section */}
-      <section className="relative pt-32 pb-40 px-4">
+      <section className="relative pt-20 md:pt-32 pb-32 md:pb-40 px-4">
         <HexagonPattern />
         <div className="max-w-7xl mx-auto text-center relative">
-          <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-green-400/20 rounded-full blur-3xl"></div>
-          <h1 className="text-6xl md:text-7xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500">
+          <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-72 md:w-96 h-72 md:h-96 bg-green-400/20 rounded-full blur-3xl"></div>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 md:mb-8 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500">
             Enterprise Escrow
             <br />
             Infrastructure
           </h1>
-          <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-400 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed">
             Powering the next generation of secure digital transactions with institutional-grade smart contract technology and multi-chain settlement.
           </p>
-          <div className="flex justify-center gap-6">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
             <Link href='/dashboard'>
-            <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-black px-8 py-6 text-lg shadow-lg shadow-green-500/20">
-              Start Integration
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+              <Button className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-black px-6 md:px-8 py-5 md:py-6 text-base md:text-lg shadow-lg shadow-green-500/20">
+                Start Integration
+                <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+              </Button>
             </Link>
-            <Button variant="outline" className="border-2 border-green-500/50 text-green-400 hover:bg-green-500/10 px-8 py-6 text-lg">
+            <Button variant="outline" className="w-full sm:w-auto border-2 border-green-500/50 text-green-400 hover:bg-green-500/10 px-6 md:px-8 py-5 md:py-6 text-base md:text-lg">
               Book Demo
-              <ExternalLink className="ml-2 w-5 h-5" />
+              <ExternalLink className="ml-2 w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </div>
         </div>
@@ -387,10 +427,10 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-16 px-4 relative">
+      <footer className="border-t border-gray-800 py-12 md:py-16 px-4 relative">
         <CircuitPattern />
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             <div>
               <div className="flex items-center mb-6">
                 <Shield className="w-8 h-8 text-green-400" />
