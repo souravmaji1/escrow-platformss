@@ -17,31 +17,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Shield, 
-  Layout,
-  House,
-  FileText,
-  Users,
-  Settings,
-  HelpCircle,
-  LogOut,
   Plus,
-  Clock,
-  ArrowRight
+  Clock
 } from "lucide-react";
-import Abi from '../../abi.json'
+import Abi from '../../abi.json';
 import { defineChain } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
-
-export const chain = defineChain(baseSepolia);
+import SidebarNav from '../../components/ui/sidebar';
 
 export default function Dashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const account = useActiveAccount();
-  const contractAddress = "0x594512ac9e053d43c637c63db099b1f072098239";
+  
+  const contractAddress = '0x20325f6dfd594bf85a7cdd6bfb7485b0906144f9';
+  const chain = defineChain(17000);
+
   const contract = getContract({
-    client,
-    chain,
+    client: client,
+    chain: chain,
     address: contractAddress,
     abi: Abi,
   });
@@ -58,81 +50,51 @@ export default function Dashboard() {
     params: account ? [account.address] : undefined,
   });
 
+  const getCompletedProjectsCount = (projects) => {
+    if (!projects) return 0;
+    return projects.filter(project => 
+      (project.status === 6 || project.status === 8) && 
+      (project.buyerAccepted || project.sellerAccepted)
+    ).length;
+  };
+
   const getStatusBadge = (status) => {
     switch(status) {
       case 0: return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">Pending</Badge>;
       case 1: return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500">Awaiting Funds</Badge>;
       case 2: return <Badge variant="primary" className="bg-green-500/10 text-green-500">Funded</Badge>;
       case 3: return <Badge variant="warning" className="bg-purple-500/10 text-purple-500">Asset Submitted</Badge>;
+      case 5: return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500">Rejected Asset</Badge>;
       case 6: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Completed</Badge>;
+      case 8: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Completed</Badge>;
+      case 9: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Dispute Created</Badge>;
       default: return <Badge variant="destructive" className="bg-red-500/10 text-red-500">Unknown</Badge>;
     }
   };
 
+  const isProjectCompleted = (project) => {
+    return (project.status === 6 || project.status === 8) && 
+           (project.buyerAccepted || project.sellerAccepted);
+  };
+
+  const getAcceptanceBadge = (project) => {
+    if (project.buyerAccepted) {
+      return <Badge variant="outline" className="bg-green-500/10 text-green-500">Buyer Accepted</Badge>;
+    }
+    if (project.sellerAccepted) {
+      return <Badge variant="outline" className="bg-green-500/10 text-green-500">Seller Accepted</Badge>;
+    }
+    return null;
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex">
-      {/* Sidebar */}
-      <aside className={`${isSidebarCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col fixed h-full`}>
-        <div className="p-4 border-b border-gray-800">
-          <Link className="flex items-center justify-center" href="/">
-            <Shield className="w-8 h-8 text-green-500" />
-            {!isSidebarCollapsed && (
-              <span className="ml-2 font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
-                SecureEscrow
-              </span>
-            )}
-          </Link>
-        </div>
-        
-        <nav className="flex-1 p-4">
-        <div className="space-y-2">
-            <Link href="/" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <House className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Home</span>}
-            </Link>
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <FileText className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Dashboard</span>}
-            </Link>
-            <Link href="/projects" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Users className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Projects</span>}
-            </Link>
-            <Link href="/createproject" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Plus className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Create</span>}
-            </Link>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-gray-800">
-            <div className="space-y-2">
-              <Link href="/settings" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <Settings className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Settings</span>}
-              </Link>
-              <Link href="/help" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <HelpCircle className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Help Center</span>}
-              </Link>
-            </div>
-          </div>
-        </nav>
-        
-        <div className="p-4 border-t border-gray-800">
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-300 hover:bg-green-500/10 hover:text-green-400"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            <Layout className="w-5 h-5" />
-            {!isSidebarCollapsed && <span className="ml-3">Collapse</span>}
-          </Button>
-        </div>
-      </aside>
+      <SidebarNav 
+        isSidebarCollapsed={isSidebarCollapsed} 
+        setIsSidebarCollapsed={setIsSidebarCollapsed}
+      />
 
-      {/* Main Content */}
       <div className={`flex-1 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
-        {/* Top Header */}
         <header className="h-16 bg-gray-900/95 border-b border-gray-800 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 sticky top-0 z-40 flex items-center justify-between px-6">
           <h1 className="text-xl font-semibold text-green-400">Dashboard</h1>
           <div className="flex items-center space-x-4">
@@ -140,18 +102,16 @@ export default function Dashboard() {
               client={client}
               chain={chain}
               appMetadata={{
-                name: "SecureEscrow",
-                url: "https://secureescrow.com",
+                name: "ForeChain",
+                url: "https://ForeChain.com",
               }}
             />
           </div>
         </header>
 
-        {/* Main Content Area */}
         <main className="p-6">
           {account ? (
             <div className="space-y-6">
-              {/* Quick Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card className="bg-gray-800/50 border-gray-700">
                   <CardHeader>
@@ -171,9 +131,9 @@ export default function Dashboard() {
                 </Card>
                 <Card className="bg-gray-800/50 border-gray-700">
                   <CardHeader>
-                    <CardDescription>Completed</CardDescription>
+                    <CardDescription>Completed Projects</CardDescription>
                     <CardTitle className="text-2xl text-green-400">
-                      {userProjects?.filter(p => p.status === 6).length || 0}
+                      {getCompletedProjectsCount(userProjects)}
                     </CardTitle>
                   </CardHeader>
                 </Card>
@@ -187,7 +147,6 @@ export default function Dashboard() {
                 </Card>
               </div>
 
-              {/* Projects List */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-semibold text-green-400">Active Projects</h2>
@@ -208,11 +167,14 @@ export default function Dashboard() {
                             <CardTitle className="text-lg text-green-400">
                               Project #{project.projectId.toString()}
                             </CardTitle>
-                            {getStatusBadge(project.status)}
+                            <div className="flex gap-2 items-center">
+                              {getStatusBadge(project.status)}
+                              {isProjectCompleted(project) && getAcceptanceBadge(project)}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                               <p className="text-sm text-gray-400">Amount</p>
                               <p className="text-lg font-semibold text-green-400">
@@ -228,15 +190,11 @@ export default function Dashboard() {
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm text-gray-400">Created</p>
+                              <p className="text-sm text-gray-400">Status</p>
                               <p className="text-lg font-semibold text-green-400">
-                                {new Date().toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-400">Last Updated</p>
-                              <p className="text-lg font-semibold text-green-400">
-                                {new Date().toLocaleDateString()}
+                                {project.buyerAccepted ? 'Buyer Accepted' : 
+                                 project.sellerAccepted ? 'Seller Accepted' : 
+                                 'Pending Acceptance'}
                               </p>
                             </div>
                           </div>

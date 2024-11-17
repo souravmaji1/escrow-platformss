@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract Escrow {
     enum Role { Buyer, Seller }
-   enum Status { Created, Accepted, BuyerPaid, AssetSubmitted, AssetAccepted, AssetRejected, Completed, Cancelled, DisputeResolved, DisputeEscalated }
+    enum Status { Created, Accepted, BuyerPaid, AssetSubmitted, AssetAccepted, AssetRejected, Completed, Cancelled, DisputeResolved, DisputeEscalated }
 
     struct AssetInfo {
         string assetLink;
@@ -22,21 +22,22 @@ contract Escrow {
     }
 
     struct ProjectDetails {
-    uint256 projectId;
-    address buyer;
-    address seller;
-    Status status;
-    bool buyerAccepted;
-    bool sellerAccepted;
-    uint256 amount;
-    string assetLink;
-    string instructions;
-    uint8 rejectionCount;
-}
+        uint256 projectId;
+        address buyer;
+        address seller;
+        Status status;
+        bool buyerAccepted;
+        bool sellerAccepted;
+        uint256 amount;
+        string assetLink;
+        string instructions;
+        uint8 rejectionCount;
+    }
 
     mapping(uint256 => Project) public projects;
     uint256 public projectCount;
-
+    uint256 public feePercentage; // Fee percentage multiplied by 100 (e.g., 100 = 1%)
+    uint256 public contractBalance; // Track accumulated fees
     address public owner;
 
     event ProjectCreated(uint256 projectId, address buyer, address seller);
@@ -48,14 +49,35 @@ contract Escrow {
     event DisputeEscalated(uint256 projectId);
     event FundsTransferred(uint256 projectId, address recipient, uint256 amount);
     event DisputeResolved(uint256 projectId, bool acceptedBySeller);
+    event FeeUpdated(uint256 newFeePercentage);
+    event FeesWithdrawn(uint256 amount);
 
     constructor() {
         owner = msg.sender;
+        feePercentage = 100; // Initialize fee to 1%
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the contract owner can call this function");
         _;
+    }
+
+    function updateFeePercentage(uint256 _newFeePercentage) public onlyOwner {
+        require(_newFeePercentage <= 1000, "Fee cannot exceed 10%"); // Safety check
+        feePercentage = _newFeePercentage;
+        emit FeeUpdated(_newFeePercentage);
+    }
+
+    function withdrawFees() public onlyOwner {
+        require(contractBalance > 0, "No fees to withdraw");
+        uint256 amount = contractBalance;
+        contractBalance = 0;
+        payable(owner).transfer(amount);
+        emit FeesWithdrawn(amount);
+    }
+
+    function calculateFee(uint256 _amount) internal view returns (uint256) {
+        return (_amount * feePercentage) / 10000; // Divide by 10000 because fee is in basis points
     }
 
     function createProject(address payable _buyer, address payable _seller) public returns (uint256) {
@@ -75,7 +97,6 @@ contract Escrow {
         });
 
         emit ProjectCreated(projectCount, _buyer, _seller);
-
         return projectCount;
     }
 
@@ -107,7 +128,11 @@ contract Escrow {
         require(msg.sender == project.buyer, "Only the buyer can add funds");
         require(msg.value > 0, "Must send some Ether");
 
-        project.amount += msg.value;
+        uint256 fee = calculateFee(msg.value);
+        uint256 projectAmount = msg.value - fee;
+        
+        project.amount = projectAmount; // Store the amount after fee
+        contractBalance += fee; // Add fee to contract balance
         project.status = Status.BuyerPaid;
 
         emit PaymentReceived(_projectId, msg.value);
@@ -135,7 +160,7 @@ contract Escrow {
         project.status = Status.AssetAccepted;
         emit AssetAccepted(_projectId);
 
-        // Transfer funds to seller
+        // Transfer funds to seller (amount already has fee deducted)
         project.seller.transfer(project.amount);
         emit FundsTransferred(_projectId, project.seller, project.amount);
 
@@ -150,54 +175,49 @@ contract Escrow {
         require(project.rejectionCount < 3, "Dispute escalated to contract owner");
 
         project.rejectionCount++;
-      //  project.status = Status.AssetRejected;
 
-      if (project.rejectionCount == 3) {
-        project.status = Status.DisputeEscalated;
-        emit DisputeEscalated(_projectId);
-       } else {
-        project.status = Status.AssetRejected;
-    }
+        if (project.rejectionCount == 3) {
+            project.status = Status.DisputeEscalated;
+            emit DisputeEscalated(_projectId);
+        } else {
+            project.status = Status.AssetRejected;
+        }
 
         emit AssetRejected(_projectId, project.rejectionCount);
-       
     }
 
     function getUserProjects(address _user) public view returns (ProjectDetails[] memory) {
-    // First, count how many projects belong to the user
-    uint256 userProjectCount = 0;
-    for (uint256 i = 1; i <= projectCount; i++) {
-        if (projects[i].buyer == _user || projects[i].seller == _user) {
-            userProjectCount++;
+        uint256 userProjectCount = 0;
+        for (uint256 i = 1; i <= projectCount; i++) {
+            if (projects[i].buyer == _user || projects[i].seller == _user) {
+                userProjectCount++;
+            }
         }
-    }
 
-    // Create array with the correct size
-    ProjectDetails[] memory userProjects = new ProjectDetails[](userProjectCount);
-    uint256 currentIndex = 0;
+        ProjectDetails[] memory userProjects = new ProjectDetails[](userProjectCount);
+        uint256 currentIndex = 0;
 
-    // Populate the array with project details
-    for (uint256 i = 1; i <= projectCount; i++) {
-        if (projects[i].buyer == _user || projects[i].seller == _user) {
-            Project storage project = projects[i];
-            userProjects[currentIndex] = ProjectDetails({
-                projectId: i,
-                buyer: project.buyer,
-                seller: project.seller,
-                status: project.status,
-                buyerAccepted: project.buyerAccepted,
-                sellerAccepted: project.sellerAccepted,
-                amount: project.amount,
-                assetLink: project.asset.assetLink,
-                instructions: project.asset.instructions,
-                rejectionCount: project.rejectionCount
-            });
-            currentIndex++;
+        for (uint256 i = 1; i <= projectCount; i++) {
+            if (projects[i].buyer == _user || projects[i].seller == _user) {
+                Project storage project = projects[i];
+                userProjects[currentIndex] = ProjectDetails({
+                    projectId: i,
+                    buyer: project.buyer,
+                    seller: project.seller,
+                    status: project.status,
+                    buyerAccepted: project.buyerAccepted,
+                    sellerAccepted: project.sellerAccepted,
+                    amount: project.amount,
+                    assetLink: project.asset.assetLink,
+                    instructions: project.asset.instructions,
+                    rejectionCount: project.rejectionCount
+                });
+                currentIndex++;
+            }
         }
-    }
 
-    return userProjects;
-}
+        return userProjects;
+    }
 
     function resolveDispute(uint256 _projectId, bool _acceptAsset) public onlyOwner {
         Project storage project = projects[_projectId];
@@ -205,17 +225,17 @@ contract Escrow {
         require(project.status == Status.DisputeEscalated, "Not in dispute state");
 
         if (_acceptAsset) {
-            // Transfer funds to seller
+            // Transfer funds to seller (amount already has fee deducted)
             project.seller.transfer(project.amount);
             emit FundsTransferred(_projectId, project.seller, project.amount);
         } else {
-            // Refund buyer
+            // Refund buyer (amount already has fee deducted)
             project.buyer.transfer(project.amount);
             emit FundsTransferred(_projectId, project.buyer, project.amount);
         }
 
         project.status = Status.DisputeResolved;
-        fdemit DisputeResolved(_projectId, _acceptAsset);
+        emit DisputeResolved(_projectId, _acceptAsset);
     }
 
     function getAssetInfo(uint256 _projectId) public view returns (string memory, string memory) {
@@ -256,12 +276,60 @@ contract Escrow {
             }
         }
 
-        // Create a new array with the correct size
         uint256[] memory result = new uint256[](count);
         for (uint256 i = 0; i < count; i++) {
             result[i] = projectsToApprove[i];
         }
 
         return result;
+    }
+
+ function getDisputedProjects(address _walletAddress) public view returns (ProjectDetails[] memory) {
+    require(_walletAddress == owner, "Only contract owner can view disputed projects");
+    
+    uint256 disputedCount = 0;
+    
+    // First count disputed projects
+    for (uint256 i = 1; i <= projectCount; i++) {
+        if (projects[i].status == Status.DisputeEscalated) {
+            disputedCount++;
+        }
+    }
+    
+    // Create array of disputed projects
+    ProjectDetails[] memory disputedProjects = new ProjectDetails[](disputedCount);
+    uint256 currentIndex = 0;
+    
+    // Fill array with disputed projects
+    for (uint256 i = 1; i <= projectCount; i++) {
+        if (projects[i].status == Status.DisputeEscalated) {
+            Project storage project = projects[i];
+            disputedProjects[currentIndex] = ProjectDetails({
+                projectId: i,
+                buyer: project.buyer,
+                seller: project.seller,
+                status: project.status,
+                buyerAccepted: project.buyerAccepted,
+                sellerAccepted: project.sellerAccepted,
+                amount: project.amount,
+                assetLink: project.asset.assetLink,
+                instructions: project.asset.instructions,
+                rejectionCount: project.rejectionCount
+            });
+            currentIndex++;
+        }
+    }
+    
+    return disputedProjects;
+}
+
+    // New helper function to get the current fee percentage
+    function getCurrentFeePercentage() public view returns (uint256) {
+        return feePercentage;
+    }
+
+    // New helper function to get the current contract balance (accumulated fees)
+    function getContractBalance() public view returns (uint256) {
+        return contractBalance;
     }
 }

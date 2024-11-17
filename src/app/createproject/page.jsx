@@ -8,7 +8,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { getContract, prepareContractCall } from "thirdweb";
 import { client } from "../client";
 import { defineChain } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
+import { sepolia } from "thirdweb/chains";
 import { 
   Shield, 
   ArrowLeft, 
@@ -19,6 +19,7 @@ import {
   House,
   FileText,
   Settings,
+  Crown,
   HelpCircle
 } from "lucide-react";
 import Link from 'next/link';
@@ -35,9 +36,9 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import Abi from '../../abi.json'
+import SidebarNav from '../../components/ui/sidebar';
 
-export const chain = defineChain(baseSepolia);
-const contractAddress = "0x594512ac9e053d43c637c63db099b1f072098239";
+
 
 const CreateProject = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -46,9 +47,12 @@ const CreateProject = () => {
   const [status, setStatus] = useState('');
   const account = useActiveAccount();
 
+  const contractAddress = '0x20325f6dfd594bf85a7cdd6bfb7485b0906144f9'
+  const chain = defineChain(17000);
+
   const contract = getContract({
-    client,
-    chain,
+    client: client,
+    chain: chain,
     address: contractAddress,
     abi: Abi,
   });
@@ -56,63 +60,10 @@ const CreateProject = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex">
       {/* Sidebar */}
-      <aside className={`${isSidebarCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col fixed h-full`}>
-        <div className="p-4 border-b border-gray-800">
-          <Link className="flex items-center justify-center" href="/">
-            <Shield className="w-8 h-8 text-green-500" />
-            {!isSidebarCollapsed && (
-              <span className="ml-2 font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
-                SecureEscrow
-              </span>
-            )}
-          </Link>
-        </div>
-        
-        <nav className="flex-1 p-4">
-        <div className="space-y-2">
-            <Link href="/" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <House className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Home</span>}
-            </Link>
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <FileText className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Dashboard</span>}
-            </Link>
-            <Link href="/projects" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Users className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Projects</span>}
-            </Link>
-            <Link href="/createproject" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Plus className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Create</span>}
-            </Link>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-gray-800">
-            <div className="space-y-2">
-              <Link href="/settings" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <Settings className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Settings</span>}
-              </Link>
-              <Link href="/help" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <HelpCircle className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Help Center</span>}
-              </Link>
-            </div>
-          </div>
-        </nav>
-        
-        <div className="p-4 border-t border-gray-800">
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-300 hover:bg-green-500/10 hover:text-green-400"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            <Layout className="w-5 h-5" />
-            {!isSidebarCollapsed && <span className="ml-3">Collapse</span>}
-          </Button>
-        </div>
-      </aside>
+      <SidebarNav 
+  isSidebarCollapsed={isSidebarCollapsed} 
+  setIsSidebarCollapsed={setIsSidebarCollapsed}
+/>
 
       {/* Main Content */}
       <div className={`flex-1 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
@@ -125,8 +76,8 @@ const CreateProject = () => {
               client={client}
               chain={chain}
               appMetadata={{
-                name: "SecureEscrow",
-                url: "https://secureescrow.com",
+                name: "ForeChain",
+                url: "https://ForeChain.com",
               }}
             />
           </div>
@@ -187,6 +138,11 @@ const CreateProject = () => {
                       method: "createProject",
                       params: [buyerAddress, sellerAddress]
                     });
+                  }}
+                  onError={(err) => {
+                  
+                    console.log(err.message)
+                    // Add your own logic here
                   }}
                 >
                   <Shield className="w-5 h-5 mr-2" />

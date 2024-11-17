@@ -415,13 +415,7 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_walletAddress",
-				"type": "address"
-			}
-		],
+		"inputs": [],
 		"name": "getDisputedProjects",
 		"outputs": [
 			{

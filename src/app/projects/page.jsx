@@ -5,7 +5,7 @@ import { useReadContract, useActiveAccount } from "thirdweb/react";
 import { getContract, prepareContractCall, toWei, toEther } from "thirdweb";
 import { client } from "../client";
 import { defineChain } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
+import { sepolia } from "thirdweb/chains";
 import Abi from '@/abi.json';
 import Link from 'next/link';
 import {
@@ -37,6 +37,7 @@ import {
   House,
   FileText, 
   DollarSign, 
+  Crown,
   Plus,
   FileCheck,
   Clock,
@@ -47,9 +48,9 @@ import {
   Settings,
   HelpCircle
 } from "lucide-react";
+import SidebarNav from '../../components/ui/sidebar';
 
-const chain = defineChain(baseSepolia);
-const contractAddress = "0x594512ac9e053d43c637c63db099b1f072098239";
+
 
 export default function Projects() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -62,9 +63,12 @@ export default function Projects() {
 
   const account = useActiveAccount();
 
+  const contractAddress = '0x20325f6dfd594bf85a7cdd6bfb7485b0906144f9'
+  const chain = defineChain(17000);
+
   const contract = getContract({
-    client,
-    chain,
+    client: client,
+    chain: chain,
     address: contractAddress,
     abi: Abi,
   });
@@ -74,6 +78,7 @@ export default function Projects() {
     method: "getUserProjects",
     params: account ? [account.address] : undefined,
   });
+  console.log(userProjects)
 
   const { data: invitations, isLoading: invitationsLoading } = useReadContract({
     contract,
@@ -87,84 +92,35 @@ export default function Projects() {
       case 1: return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500">Awaiting Funds</Badge>;
       case 2: return <Badge variant="primary" className="bg-green-500/10 text-green-500">Funded</Badge>;
       case 3: return <Badge variant="warning" className="bg-purple-500/10 text-purple-500">Asset Submitted</Badge>;
+      case 5: return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500">Rejected Asset</Badge>;
       case 6: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Completed</Badge>;
+      case 8: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Completed</Badge>;
+      case 9: return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500">Dispute Created</Badge>;
       default: return <Badge variant="destructive" className="bg-red-500/10 text-red-500">Unknown</Badge>;
     }
   };
 
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex">
       {/* Sidebar */}
-      <aside className={`${isSidebarCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col fixed h-full`}>
-        <div className="p-4 border-b border-gray-800">
-          <Link className="flex items-center justify-center" href="/">
-            <Shield className="w-8 h-8 text-green-500" />
-            {!isSidebarCollapsed && (
-              <span className="ml-2 font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
-                SecureEscrow
-              </span>
-            )}
-          </Link>
-        </div>
-        
-        <nav className="flex-1 p-4">
-          <div className="space-y-2">
-            <Link href="/" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <House className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Home</span>}
-            </Link>
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <FileText className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Dashboard</span>}
-            </Link>
-            <Link href="/projects" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Users className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Projects</span>}
-            </Link>
-            <Link href="/createproject" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-              <Plus className="w-5 h-5" />
-              {!isSidebarCollapsed && <span className="ml-3">Create</span>}
-            </Link>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-gray-800">
-            <div className="space-y-2">
-              <Link href="/settings" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <Settings className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Settings</span>}
-              </Link>
-              <Link href="/help" className="flex items-center px-4 py-3 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded-lg transition-colors">
-                <HelpCircle className="w-5 h-5" />
-                {!isSidebarCollapsed && <span className="ml-3">Help Center</span>}
-              </Link>
-            </div>
-          </div>
-        </nav>
-        
-        <div className="p-4 border-t border-gray-800">
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-300 hover:bg-green-500/10 hover:text-green-400"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            <Layout className="w-5 h-5" />
-            {!isSidebarCollapsed && <span className="ml-3">Collapse</span>}
-          </Button>
-        </div>
-      </aside>
-
+      <SidebarNav 
+  isSidebarCollapsed={isSidebarCollapsed} 
+  setIsSidebarCollapsed={setIsSidebarCollapsed}
+/>
       {/* Main Content */}
       <div className={`flex-1 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
         {/* Top Header */}
         <header className="h-16 bg-gray-900/95 border-b border-gray-800 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 sticky top-0 z-40 flex items-center justify-between px-6">
-          <h1 className="text-xl font-semibold text-green-400">SecureEscrow</h1>
+          <h1 className="text-xl font-semibold text-green-400">ForeChain</h1>
           <div className="flex items-center space-x-4">
             <ConnectButton
               client={client}
               chain={chain}
               appMetadata={{
-                name: "SecureEscrow",
-                url: "https://secureescrow.com",
+                name: "ForeChain",
+                url: "https://ForeChain.com",
               }}
             />
           </div>
@@ -360,6 +316,37 @@ export default function Projects() {
                                     Reject Asset
                                   </TransactionButton>
                                 </div>
+                              </div>
+                            )}
+
+                       {project.status === 5 && project.seller.toLowerCase() === account?.address.toLowerCase() && (
+                              <div className="space-y-2">
+                                <Input
+                                  type="text"
+                                  placeholder="Asset Link"
+                                  value={assetLink}
+                                  onChange={(e) => setAssetLink(e.target.value)}
+                                  className="bg-gray-800 border-gray-700"
+                                />
+                                <Textarea
+                                  placeholder="Asset Instructions"
+                                  value={assetInstructions}
+                                  onChange={(e) => setAssetInstructions(e.target.value)}
+                                  className="bg-gray-800 border-gray-700"
+                                />
+                                <TransactionButton
+                                  className="w-full bg-green-500 hover:bg-green-600 text-black"
+                                  transaction={() => {
+                                    return prepareContractCall({
+                                      contract,
+                                      method: "submitAsset",
+                                      params: [project.projectId, assetLink, assetInstructions]
+                                    });
+                                  }}
+                                >
+                                  <FileCheck className="w-4 h-4 mr-2" />
+                                  Submit Asset
+                                </TransactionButton>
                               </div>
                             )}
 
