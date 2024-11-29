@@ -1,6 +1,6 @@
 "use client";
 
-"use client";
+
 
 import React from 'react';
 import { ConnectButton } from "thirdweb/react";
@@ -30,6 +30,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const HexagonPattern = () => (
   <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -253,6 +254,7 @@ export default function LandingPage() {
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-900 overflow-hidden">
@@ -272,7 +274,7 @@ export default function LandingPage() {
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-300 hover:text-green-400 transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-green-400 transition-colors">Solutions</a>
-              <a href="#pricing" className="text-gray-300 hover:text-green-400 transition-colors">Enterprise</a>
+              <a href="#metrics" className="text-gray-300 hover:text-green-400 transition-colors">Metrics</a>
               <ConnectButton
                 client={client}
                 appMetadata={{
@@ -292,6 +294,28 @@ export default function LandingPage() {
       </header>
 
       <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+
+      <Dialog open={isDemoModalOpen} onOpenChange={setIsDemoModalOpen}>
+        <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-green-400">Forechain Demo</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Watch our comprehensive platform walkthrough
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full aspect-video bg-gray-800 rounded-lg overflow-hidden">
+            <iframe 
+              src="https://tnijqmtoqpmgdhvltuhl.supabase.co/storage/v1/object/public/avatars/avatars/screen-recording%20(7).webm?t=2024-11-29T04%3A23%3A59.141Z" 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              allow="autoplay; fullscreen; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </DialogContent>
+      </Dialog> 
 
       {/* Hero Section */}
       <section className="relative pt-20 md:pt-32 pb-32 md:pb-40 px-4">
@@ -313,8 +337,10 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </Link>
-            <Button variant="outline" className="w-full sm:w-auto border-2 border-green-500/50 text-green-400 hover:bg-green-500/10 px-6 md:px-8 py-5 md:py-6 text-base md:text-lg">
-              Book Demo
+            <Button 
+            onClick={() => setIsDemoModalOpen(true)}
+            variant="outline" className="w-full sm:w-auto border-2 border-green-500/50 text-green-400 hover:bg-green-500/10 px-6 md:px-8 py-5 md:py-6 text-base md:text-lg">
+            Watch Demo
               <ExternalLink className="ml-2 w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </div>
@@ -323,7 +349,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-20 bg-gray-800/50">
+      <section id="metrics"  className="relative py-20 bg-gray-800/50">
         <CircuitPattern />
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
